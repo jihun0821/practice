@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오프라인 타이머</title>
+    <link rel="stylesheet" href="timerstyle.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>오프라인 타이머</h1>
+        
+        <!-- 현재 시간 표시 -->
+        <div class="clock-box">
+            <h2>현재 시간</h2>
+            <div id="clock">--:--:--</div>
+        </div>
+
+        <!-- 타이머 -->
+        <div class="timer-box">
+            <h2>타이머</h2>
+            <div id="timer">00:00:00</div>
+            <div class="button-group">
+                <button onclick="startTimer()">시작</button>
+                <button onclick="pauseTimer()">일시정지</button>
+                <button onclick="resetTimer()">초기화</button>
+            </div>
+        </div>
+
+        <!-- 알람 예약 -->
+        <div class="alarm-box">
+            <h2>시간 예약</h2>
+            <input type="time" id="alarmTime">
+            <button onclick="setAlarm()">알람 설정</button>
+            <p id="alarmStatus">알람 미설정</p>
+        </div>
+        <div class="navigation">
+          <a href="index.html">할 일 목록 페이지로 이동</a>
+        </div>
+
+    </div>
+
+    <script>
+        // 현재 시간 표시
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+
+        // 타이머 기능
+        let timerSeconds = 0, timerRunning = false, timerInterval;
+        
+        function updateTimerDisplay() {
+            let hours = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
+            let minutes = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
+            let seconds = String(timerSeconds % 60).padStart(2, '0');
+            document.getElementById('timer').innerText = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function startTimer() {
+            if (!timerRunning) {
+                timerRunning = true;
+                timerInterval = setInterval(() => {
+                    timerSeconds++;
+                    updateTimerDisplay();
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            timerRunning = false;
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerSeconds = 0;
+            updateTimerDisplay();
+        }
+
+        // 알람 기능
+        function setAlarm() {
+            const alarmTime = document.getElementById('alarmTime').value;
+            if (!alarmTime) {
+                alert('알람 시간을 입력하세요!');
+                return;
+            }
+            document.getElementById('alarmStatus').innerText = `알람 설정: ${alarmTime}`;
+
+            const checkAlarm = setInterval(() => {
+                const now = new Date();
+                const currentTime = now.getHours().toString().padStart(2, '0') + ":" +
+                                    now.getMinutes().toString().padStart(2, '0');
+
+                if (currentTime === alarmTime) {
+                    alert('알람 시간입니다!');
+                    clearInterval(checkAlarm);
+                    document.getElementById('alarmStatus').innerText = '알람 미설정';
+                }
+            }, 1000);
+        }
+    </script>
+
+</body>
+</html>
